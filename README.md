@@ -17,6 +17,10 @@ The build creates a zip file containing:
 The payload is intended to be installed into the Rust toolchain tree used in the
 RISC OS build environment.
 
+GitHub Actions renames the built archive to `RISCOS64-RustCore-<version>.zip`.
+Tag builds for tags beginning with `v` also create a draft GitHub release with
+that archive attached.
+
 ## Builder model
 
 The repo uses a repo-local Rustup installation and nightly toolchain for
