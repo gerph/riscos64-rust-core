@@ -12,7 +12,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: gerph/riscos-build:latest
+      image: gerph/riscos-build:latest-64bit
 
     steps:
       - name: Check out repository
