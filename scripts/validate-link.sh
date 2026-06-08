@@ -10,8 +10,9 @@ WORK_DIR="$ROOT_DIR/build/validate"
 TARGET_DIR="$ROOT_DIR/build/validate-target"
 PAYLOAD_LIB_DIR="$ROOT_DIR/build/payload/rustlib/$TARGET/lib"
 
-export RUSTUP_HOME
-export CARGO_HOME
+rustup_cmd() {
+    env -u CARGO_HOME RUSTUP_HOME="$RUSTUP_HOME" rustup "$@"
+}
 
 mkdir -p "$WORK_DIR" "$TARGET_DIR"
 
@@ -21,11 +22,12 @@ if [ ! -d "$PAYLOAD_LIB_DIR" ]; then
     exit 1
 fi
 
-rustup toolchain install "$TOOLCHAIN" --profile minimal
-rustup component add rust-src --toolchain "$TOOLCHAIN"
-rustup target add "$TARGET" --toolchain "$TOOLCHAIN"
+rustup_cmd toolchain install "$TOOLCHAIN" --profile minimal
+rustup_cmd component add rust-src --toolchain "$TOOLCHAIN"
+rustup_cmd target add "$TARGET" --toolchain "$TOOLCHAIN"
+CARGO_BIN="$(rustup_cmd which cargo --toolchain "$TOOLCHAIN")"
 
-cargo +"$TOOLCHAIN" rustc \
+env RUSTUP_HOME="$RUSTUP_HOME" CARGO_HOME="$CARGO_HOME" "$CARGO_BIN" rustc \
     -Z build-std=core,compiler_builtins \
     --manifest-path "$ROOT_DIR/smoke-link/Cargo.toml" \
     --target "$TARGET" \

@@ -12,16 +12,18 @@ DIST_DIR="${DIST_DIR:-$ROOT_DIR/build/dist}"
 MANIFEST_PATH="$PAYLOAD_DIR/manifest.txt"
 LIB_DIR="$PAYLOAD_DIR/rustlib/$TARGET/lib"
 
-export RUSTUP_HOME
-export CARGO_HOME
+rustup_cmd() {
+    env -u CARGO_HOME RUSTUP_HOME="$RUSTUP_HOME" rustup "$@"
+}
 
 mkdir -p "$RUSTUP_HOME" "$CARGO_HOME" "$TARGET_DIR" "$LIB_DIR" "$DIST_DIR"
 
-rustup toolchain install "$TOOLCHAIN" --profile minimal
-rustup component add rust-src --toolchain "$TOOLCHAIN"
-rustup target add "$TARGET" --toolchain "$TOOLCHAIN"
+rustup_cmd toolchain install "$TOOLCHAIN" --profile minimal
+rustup_cmd component add rust-src --toolchain "$TOOLCHAIN"
+rustup_cmd target add "$TARGET" --toolchain "$TOOLCHAIN"
+CARGO_BIN="$(rustup_cmd which cargo --toolchain "$TOOLCHAIN")"
 
-cargo +"$TOOLCHAIN" build \
+env RUSTUP_HOME="$RUSTUP_HOME" CARGO_HOME="$CARGO_HOME" "$CARGO_BIN" build \
     -Z build-std=core,compiler_builtins \
     --manifest-path "$ROOT_DIR/smoke-build/Cargo.toml" \
     --target "$TARGET" \
@@ -36,7 +38,7 @@ find "$TARGET_DIR/$TARGET/release/deps" -maxdepth 1 -type f \
        -o -name 'libcompiler_builtins-*.rlib' -o -name 'libcompiler_builtins-*.rmeta' \) \
     -exec cp {} "$LIB_DIR/" \;
 
-RUSTC_VERSION="$(rustup run "$TOOLCHAIN" rustc --version)"
+RUSTC_VERSION="$(rustup_cmd run "$TOOLCHAIN" rustc --version)"
 cat > "$MANIFEST_PATH" <<EOF
 artifact=riscos64-rust-core
 toolchain=$TOOLCHAIN
@@ -54,4 +56,3 @@ EOF
 
 echo "Payload prepared in $PAYLOAD_DIR"
 echo "Zip artifact: $DIST_DIR/riscos64-rust-core-$TOOLCHAIN-$TARGET.zip"
-
