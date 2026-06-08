@@ -23,8 +23,7 @@ jobs:
         run: |
           set -euo pipefail
           apt-get update
-          apt-get install -y build-essential \
-                             rustup
+          apt-get install -y build-essential
 
       - name: Build packaged Rust core payload
         shell: bash
@@ -43,4 +42,3 @@ jobs:
         with:
           name: riscos64-rust-core-payload
           path: build/dist/*.zip
-

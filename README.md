@@ -19,14 +19,18 @@ RISC OS build environment.
 
 ## Builder model
 
-The repo uses a repo-local nightly Rust toolchain for building upstream Rust
-libraries from source. The shared user toolchain does not need to be changed.
+The repo uses a repo-local Rustup installation and nightly toolchain for
+building upstream Rust libraries from source. The shared user toolchain does not
+need to be changed.
 
 The builder uses:
 
 - nightly Cargo
 - `rust-src`
 - `-Z build-std=core,compiler_builtins`
+
+The scripts bootstrap their own Rustup installation under `.local-cargo/` and
+`.local-rustup/`.
 
 The builder also needs a host C toolchain on the Linux side because
 `compiler_builtins` uses a host build script. In this environment that meant
