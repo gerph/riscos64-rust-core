@@ -1,25 +1,28 @@
 # riscos64-rust-core
 
-This repository builds a packaged Rust target-library payload for RISC OS 64-bit
+This repository builds packaged Rust target-library payloads for RISC OS 64-bit
 work based on the upstream `aarch64-unknown-none` target.
 
-Milestone 1 focuses on `core` and `compiler_builtins`. It does not include
-`alloc`, `std`, or any RISC OS-specific Rust OS bindings.
+Milestone 2 adds upstream `alloc` while keeping the milestone 1 `core`-only
+payload available as a compatibility profile. It still does not include `std`
+or any RISC OS-specific Rust OS bindings.
 
 ## What this repo produces
 
-The build creates a zip file containing:
+Each build profile creates a zip file containing:
 
 - a deterministic `rustlib/aarch64-unknown-none/lib/` subtree
 - the `libcore` and `libcompiler_builtins` artifacts built from source
+- the `alloc` profile also includes `liballoc`
 - a simple manifest describing the toolchain and target used
 
 The payload is intended to be installed into the Rust toolchain tree used in the
 RISC OS build environment.
 
-GitHub Actions renames the built archive to `RISCOS64-RustCore-<version>.zip`.
-Tag builds for tags beginning with `v` also create a draft GitHub release with
-that archive attached.
+GitHub Actions publishes both profiles. Tagged releases attach:
+
+- `RISCOS64-RustCore-<version>.zip` for the alloc-inclusive default payload
+- `RISCOS64-RustCore-coreonly-<version>.zip` for the core-only compatibility payload
 
 ## Builder model
 
@@ -31,7 +34,8 @@ The builder uses:
 
 - nightly Cargo
 - `rust-src`
-- `-Z build-std=core,compiler_builtins`
+- `-Z build-std=core,compiler_builtins` for the `core` profile
+- `-Z build-std=core,alloc,compiler_builtins` for the `alloc` profile
 
 The scripts bootstrap their own Rustup installation under `.local-cargo/` and
 `.local-rustup/`.
@@ -42,13 +46,26 @@ installing `build-essential`.
 
 ## Quick start
 
-Build and package the payload:
+Build and package the alloc-inclusive payload:
+
+```sh
+./scripts/build-alloc.sh
+```
+
+Build the core-only compatibility payload:
 
 ```sh
 ./scripts/build-core.sh
 ```
 
-Validate that the produced libraries can link a direct Rust object into an AIF:
+Validate the alloc-inclusive payload:
+
+```sh
+./scripts/validate-alloc.sh
+```
+
+Validate that the core-only payload can still link a direct Rust object into an
+AIF:
 
 ```sh
 ./scripts/validate-link.sh
@@ -62,7 +79,8 @@ toolchain sysroot can produce mismatched `core` symbol hashes.
 
 The build products are written under `build/`:
 
-- `build/payload/` unpacked payload tree
+- `build/payload/core/` unpacked core-only payload tree
+- `build/payload/alloc/` unpacked alloc-inclusive payload tree
 - `build/dist/` zip release artifacts
 - `build/target/` Cargo build output
-- `build/validate/` link validation outputs
+- `build/validate/` per-profile validation outputs
