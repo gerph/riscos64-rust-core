@@ -3,4 +3,4 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
-exec "$ROOT_DIR/scripts/validate-payload.sh" --profile core "$@"
+exec "$ROOT_DIR/scripts/validate-payload.sh" --profile alloc "$@"

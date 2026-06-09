@@ -40,8 +40,17 @@ The initial proving ground was `../rustexample`.
 - Prefer upstream Rust `core`; do not design a custom replacement library.
 - Treat nightly plus `rust-src` as a builder concern, not a user-default
   toolchain change.
-- Keep milestone 1 focused on `core`; leave `alloc` for later unless the plan is
-  explicitly revised.
+- Milestone 2 adds upstream `alloc`, but user programs still provide their own
+  `#[global_allocator]`.
 - Leave the OS-level Rust interface library out of scope for now.
 - Continue treating `libcrt.a` as the startup and exit substrate unless concrete
   Rust support requirements prove otherwise.
+
+## CI inspection
+
+- Agents may inspect CI directly with `gh run list --workflow build.yml`,
+  `gh run view <run-id> --log-failed`, and `gh release view` once GitHub CLI
+  authentication is available.
+- Prefer a one-time `gh auth login` in the environment or a configured
+  `GH_TOKEN`.
+- `./scripts/ci-status.sh` wraps the common CI inspection commands.
