@@ -100,13 +100,13 @@ jobs:
           echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
 
       - name: Download alloc payload archive
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: riscos64-rust-core-alloc-${{ steps.version.outputs.version }}
           path: release-artifacts
 
       - name: Download core-only payload archive
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: riscos64-rust-core-core-${{ steps.version.outputs.version }}
           path: release-artifacts
