@@ -78,7 +78,7 @@ jobs:
           mv "$archive_path" "build/dist/${{ steps.version.outputs.archive_name }}"
 
       - name: Upload payload archive
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: riscos64-rust-core-${{ matrix.profile }}-${{ steps.version.outputs.version }}
           path: build/dist/${{ steps.version.outputs.archive_name }}
